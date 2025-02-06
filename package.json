@@ -5,6 +5,7 @@
     "main": "server.js",
     "scripts": {
         "start": "npm run serve",
+        "start:db": "docker compose up -d",
         "build": "npm run build-ts",
         "serve": "node dist/server.js",
         "test": "jest --coverage=false --verbose",
