@@ -1,1 +1,0 @@
-export { room } from './schema/room';
