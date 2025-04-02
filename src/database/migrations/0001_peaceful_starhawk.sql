@@ -1,0 +1,1 @@
+ALTER TABLE "room" ALTER COLUMN "createdAt" SET DATA TYPE timestamp;
