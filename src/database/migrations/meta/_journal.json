@@ -50,6 +50,20 @@
       "when": 1743694038224,
       "tag": "0006_buk",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1743695148885,
+      "tag": "0007_jemiola",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1743703332237,
+      "tag": "0008_jodla",
+      "breakpoints": true
     }
   ]
 }
