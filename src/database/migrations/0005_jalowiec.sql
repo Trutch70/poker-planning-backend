@@ -1,0 +1,1 @@
+ALTER TABLE "task" ADD CONSTRAINT "task_roomId_room_id_fk" FOREIGN KEY ("roomId") REFERENCES "public"."room"("id") ON DELETE no action ON UPDATE no action;

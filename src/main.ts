@@ -1,6 +1,8 @@
 import express from "express";
 import { room } from "./database/schema";
 import { db } from "./database/connection";
+import { generateName } from "./features/generateName";
+import { drawAnimal } from "./features/drawAnimal";
 
 const app = express();
 
@@ -13,15 +15,19 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/rooms", async (req, res) => {
-    const { id } = req.body;
-    const newRoom = await db.insert(room).values({ id, createdAt: new Date() }).returning();
+    const newRoom = await db
+        .insert(room)
+        .values({ id: await generateName(), createdAt: new Date() })
+        .returning();
     res.status(201).json(newRoom);
 });
 
-app.get("/rooms", async (req, res) => {
-    const rooms = await db.select().from(room);
-    res.json(rooms);
-});
+// app.post("/rooms/:roomId/join", async (req, res) => {
+//     const { roomId } = req.params;
+//     const drawnUsername = await drawAnimal();
+
+//     return username;
+// });
 
 app.listen(port, () => {
     console.log(`App is running at http://localhost:${port}`);
