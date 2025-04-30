@@ -21,6 +21,6 @@ export const task = pgTable("tasks", {
         .references(() => room.id),
     estimates: jsonb().$type<Estimate[]>().default([]),
     finalEstimate: integer(),
-    answersShown: boolean(),
+    answersShown: boolean().default(false),
     createdAt: timestamp({ precision: 0 }).defaultNow(),
 });

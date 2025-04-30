@@ -1,10 +1,14 @@
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import express from "express";
 import { db } from "./database/connection";
 import { room, task } from "./database/schema";
 import { participant } from "./database/schemas/participant";
 import { drawAnimal } from "./features/drawAnimal";
 import { generateName } from "./features/generateName";
+import {
+    createTaskRequestSchema,
+    updateTaskRequestSchema,
+} from "./validator/task.ts";
 
 const app = express();
 
@@ -43,12 +47,41 @@ app.post("/rooms/:roomId/join", async (req, res) => {
     res.status(201).json(drawnUsername);
 });
 
-app.patch("/task/:taskId/name", async (req, res) => {
+app.post("/tasks", async (req, res) => {
+    const [taskRoom] = await db
+        .select({ count: count(room.id) })
+        .from(room)
+        .where(eq(room.id, req.body.roomId))
+        .limit(1);
+
+    if (0 === taskRoom.count) {
+        res.status(400).send("Room not found");
+    }
+
+    const body = createTaskRequestSchema.parse(req.body);
+    const [newTask] = await db
+        .insert(task)
+        .values({
+            name: body.name,
+            roomId: body.roomId,
+            answersShown: false,
+        })
+        .returning();
+
+    res.status(201).json({ id: newTask.id });
+});
+
+app.patch("/tasks/:taskId", async (req, res) => {
     const { taskId } = req.params;
+    const body = updateTaskRequestSchema.parse(req.body);
 
     await db
         .update(task)
-        .set({ name: req.body.name })
+        .set({
+            name: body.name,
+            finalEstimate: body.finalEstimate,
+            answersShown: body.answersShown,
+        })
         .where(eq(task.id, Number(taskId)));
 
     if (taskId.length === 0) {

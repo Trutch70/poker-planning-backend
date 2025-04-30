@@ -11,6 +11,7 @@ const getRandomAdjective = async () => {
         .where(eq(adjective.id, randomIndex));
     return adj[0];
 };
+
 const getRandomPlant = async () => {
     const [result] = await db.select({ count: count() }).from(plant);
     const randomIndex = Math.floor(Math.random() * result.count);
