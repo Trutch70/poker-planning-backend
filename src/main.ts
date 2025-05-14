@@ -1,4 +1,4 @@
-import { count, eq } from "drizzle-orm";
+import { asc, count, eq } from "drizzle-orm";
 import express from "express";
 import { db } from "./database/connection";
 import { room, task } from "./database/schema";
@@ -134,7 +134,8 @@ app.get("/rooms/:roomId", async (req, res) => {
     const selectedTasks = await db
         .select()
         .from(task)
-        .where(eq(task.roomId, roomId));
+        .where(eq(task.roomId, roomId))
+        .orderBy(asc(task.createdAt));
 
     if (roomDetailsFromDb.length === 0) {
         res.status(404).json({ error: "Room not found" });
