@@ -7,6 +7,7 @@ import { drawAnimal } from "./features/drawAnimal";
 import { generateName } from "./features/generateName";
 import {
     createTaskRequestSchema,
+    updateTaskEstimateSchema,
     updateTaskRequestSchema,
 } from "./validator/task.ts";
 
@@ -75,20 +76,46 @@ app.patch("/tasks/:taskId", async (req, res) => {
     const { taskId } = req.params;
     const body = updateTaskRequestSchema.parse(req.body);
 
-    await db
+    const updatedTasks = await db
         .update(task)
         .set({
             name: body.name,
             finalEstimate: body.finalEstimate,
             answersShown: body.answersShown,
         })
-        .where(eq(task.id, Number(taskId)));
+        .where(eq(task.id, Number(taskId)))
+        .returning({ id: task.id });
 
-    if (taskId.length === 0) {
+    if (!updatedTasks.length) {
         res.status(404).json({ error: "Task not found" });
 
         return;
     }
+
+    res.status(204).send();
+});
+
+app.patch("/tasks/:taskId/estimate", async (req, res) => {
+    const { taskId } = req.params;
+    const body = updateTaskEstimateSchema.parse(req.body);
+
+    const tasks = await db
+        .select({ estimates: task.estimates })
+        .from(task)
+        .where(eq(task.id, Number(taskId)))
+        .limit(1);
+
+    if (!tasks.length) {
+        res.status(404).json({ error: "Task not found" });
+
+        return;
+    }
+
+    const targetEstimates = tasks[0].estimates;
+    targetEstimates[body.username] = body.estimate;
+
+    await db.update(task).set({ estimates: targetEstimates });
+
     res.status(204).send();
 });
 
@@ -119,6 +146,7 @@ app.get("/rooms/:roomId", async (req, res) => {
         tasks: selectedTasks.map((t) => ({
             name: t.name,
             finalEstimate: t.finalEstimate,
+            estimates: t.answersShown ? t.estimates : {},
             answersShown: t.answersShown,
         })),
         participants: selectedParticipants.map((p) => p.username),

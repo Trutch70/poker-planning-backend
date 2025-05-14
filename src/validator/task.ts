@@ -12,3 +12,8 @@ export const updateTaskRequestSchema = z
         answersShown: z.boolean(),
     })
     .partial();
+
+export const updateTaskEstimateSchema = z.object({
+    username: z.string(),
+    estimate: z.string(),
+});

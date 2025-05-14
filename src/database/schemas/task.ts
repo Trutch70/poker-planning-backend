@@ -8,10 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { room } from "./room";
 
-export interface Estimate {
-    username: string;
-    estimate: number | null;
-}
+export type Estimates = Record<string, string>;
 
 export const task = pgTable("tasks", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -19,7 +16,7 @@ export const task = pgTable("tasks", {
     roomId: text()
         .notNull()
         .references(() => room.id),
-    estimates: jsonb().$type<Estimate[]>().default([]),
+    estimates: jsonb().$type<Estimates>().default({}).notNull(),
     finalEstimate: integer(),
     answersShown: boolean().default(false),
     createdAt: timestamp({ precision: 0 }).defaultNow(),
