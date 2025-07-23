@@ -4,7 +4,10 @@ import { animal } from "../database/schema";
 
 export const drawAnimal = async () => {
     const [result] = await db.select({ count: count() }).from(animal);
-    const randomIndex = Math.floor(Math.random() * result.count);
+    const randomIndex = Math.max(
+        Math.floor(Math.random() * result.count + 1),
+        1
+    );
     const randomAnimal = await db
         .select()
         .from(animal)
