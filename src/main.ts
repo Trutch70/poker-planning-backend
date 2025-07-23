@@ -28,7 +28,8 @@ app.post("/rooms", async (req, res) => {
         .insert(room)
         .values({ id: await generateName(), createdAt: new Date() })
         .returning();
-    res.status(201).json(newRoom);
+
+    res.status(201).json(newRoom[0]);
 });
 
 app.post("/rooms/:roomId/join", async (req, res) => {
