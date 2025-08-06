@@ -1,0 +1,1 @@
+ALTER TABLE "participants" ADD CONSTRAINT "unique_participant_username_room-id" UNIQUE("username","roomId");
