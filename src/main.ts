@@ -24,12 +24,21 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/rooms", async (req, res) => {
-    const newRoom = await db
+    const [newRoom] = await db
         .insert(room)
         .values({ id: await generateName(), createdAt: new Date() })
         .returning();
 
-    res.status(201).json(newRoom[0]);
+    await db
+        .insert(task)
+        .values({
+            name: "Poker 1",
+            roomId: newRoom.id,
+            answersShown: false,
+        })
+        .returning();
+
+    res.status(201).json(newRoom);
 });
 
 app.post("/rooms/:roomId/join", async (req, res) => {
@@ -150,7 +159,7 @@ app.get("/rooms/:roomId", async (req, res) => {
         tasks: selectedTasks.map((t) => ({
             name: t.name,
             finalEstimate: t.finalEstimate,
-            estimates: t.answersShown ? t.estimates : {},
+            estimates: t.estimates,
             answersShown: t.answersShown,
         })),
         participants: selectedParticipants.map((p) => p.username),
