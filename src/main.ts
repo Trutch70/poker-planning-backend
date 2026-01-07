@@ -157,6 +157,7 @@ app.get("/rooms/:roomId", async (req, res) => {
     const roomDetails = {
         ...roomDetailsFromDb[0],
         tasks: selectedTasks.map((t) => ({
+            id: t.id,
             name: t.name,
             finalEstimate: t.finalEstimate,
             estimates: t.estimates,
